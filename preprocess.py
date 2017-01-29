@@ -27,14 +27,16 @@ def process_data_file(filename):
    DATA_FRAME = pd.read_table(filename, names = [
        'TweetText',
        'TweetUserName',
-       'UserIDString', 
+       'UserIDString',
        'TweetIDString',
        'Timestamp'
     ])
    DATA_FRAME['tokens'] = DATA_FRAME['TweetText'].map(tokenize)
    DATA_FRAME.to_pickle('data_preprocessed.p')
 
-if __name__ == '__main__':
-    filename = sys.argv[1] 
-    process_data_file(filename)
+def load_preprocessed(filename):
+    return pd.read_pickle(filename)
 
+if __name__ == '__main__':
+    filename = sys.argv[1]
+    process_data_file(filename)
