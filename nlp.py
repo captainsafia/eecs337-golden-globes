@@ -1,5 +1,6 @@
 import sys, os
 from preprocess import process_data_file
+from presenters import main
 
 
 def usage_message():
@@ -26,7 +27,7 @@ if __name__ == "__main__":
             print("Find winners")
             exit()
         elif args[0] == "-presenters":
-            print("Find presenters")
+            print("Presenter: ", main())
             exit()
 
     usage_message()
