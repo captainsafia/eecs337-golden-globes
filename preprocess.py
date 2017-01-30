@@ -5,10 +5,13 @@ import re
 
 import nltk
 #nltk.download()
-#from nltk.corpus import stopwords
+from nltk.corpus import stopwords
+from nltk.stem.lancaster import LancasterStemmer
 import string
 
 DATA_FRAME = None
+
+st = LancasterStemmer()
 
 tokens_re_string = [
     r'<[^>]+>',
@@ -24,11 +27,11 @@ tokens_re_string = [
 tokens = re.compile(r'('+'|'.join(tokens_re_string)+')', re.VERBOSE | re.IGNORECASE)
 
 def tokenize(text):
-    #punctuation = list(string.punctuation)
-    #stop = stopwords.words('english') + punctuation + ['rt','RT', 'via']
+    punctuation = list(string.punctuation)
+    stop = stopwords.words('english') + punctuation + ['rt','RT', 'via']
     if isinstance(text, str):
-        #if text not in stop:
-        return tokens.findall(text)
+        if text not in stop:
+            return tokens.findall(st.stem(text.lower()))
     return []
 
 def process_data_file(filename):
