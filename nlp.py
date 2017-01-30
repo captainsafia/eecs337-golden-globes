@@ -1,15 +1,15 @@
 import sys, os
 from preprocess import process_data_file
 
+
 def usage_message():
     print "usage:"
     print "python nlp.py -host <path/to/tab/file>"
     print "python nlp.py -winner <path/to/tab/file>"
     print "python nlp.py -presenters <path/to/tab/file>"
 
+
 if __name__ == "__main__":
-
-
 
     args = sys.argv[1:]
 
