@@ -3,6 +3,11 @@ import pandas as pd
 import numpy as np
 import re
 
+import nltk
+#nltk.download()
+#from nltk.corpus import stopwords
+import string
+
 DATA_FRAME = None
 
 tokens_re_string = [
@@ -19,7 +24,10 @@ tokens_re_string = [
 tokens = re.compile(r'('+'|'.join(tokens_re_string)+')', re.VERBOSE | re.IGNORECASE)
 
 def tokenize(text):
+    #punctuation = list(string.punctuation)
+    #stop = stopwords.words('english') + punctuation + ['rt','RT', 'via']
     if isinstance(text, str):
+        #if text not in stop:
         return tokens.findall(text)
     return []
 
@@ -33,9 +41,6 @@ def process_data_file(filename):
     ])
    DATA_FRAME['tokens'] = DATA_FRAME['TweetText'].map(tokenize)
    DATA_FRAME.to_pickle('data_preprocessed.p')
-
-def load_preprocessed(filename):
-    return pd.read_pickle(filename)
 
 if __name__ == '__main__':
     filename = sys.argv[1]

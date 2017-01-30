@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+stanford-ner/
+data_preprocessed.p
+
 # Distribution / packaging
 .Python
 env/
