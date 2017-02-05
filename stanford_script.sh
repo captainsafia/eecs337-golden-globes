@@ -20,7 +20,7 @@ echo "from nltk.tag.stanford import StanfordNERTagger" >> test_sner.py
 # initialize SNER using copied files
 echo "st = StanfordNERTagger('stanford-ner/english.all.3class.distsim.crf.ser.gz', 'stanford-ner/stanford-ner.jar')" >> test_sner.py
 # add test to see weather it works
-echo "print st.tag('You can call me Billiy Bubu and I live in Amsterdam.'.split())" >> test_sner.py
+echo "print(st.tag('You can call me Billiy Bubu and I live in Amsterdam.'.split()))" >> test_sner.py
 
 chmod +x test_sner.py
 
