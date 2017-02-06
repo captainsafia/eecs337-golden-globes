@@ -17,7 +17,7 @@ new tuple like ('Emma', 'Person'). The tagged bigrams are then filtered to exclu
 any that don't contain 'PERSON' as the tag for both words in the bigram and
 the extracted words are treated as the names of the winner and printed out.
 
-Not that this implementation does take a while to run. The bulk of the compute
+Note that this implementation does take a while to run. The bulk of the compute
 time is spent tagging the bigrams using the Stanford POS Tagger.
 """
 
@@ -67,7 +67,7 @@ def get_bigrams(tweets):
     tweet_bigrams = []
     for tweet in split_tweets:
         tweet_bigrams.extend(list(bigrams(tweet)))
-    return set(tweet_bigrams)
+    return list(set(tweet_bigrams))
 
 def find_award_winners():
     """
