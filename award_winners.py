@@ -1,5 +1,8 @@
 import pandas as pd
 
+import os
+import pickle
+
 from nltk import bigrams
 from nltk.tag.stanford import StanfordNERTagger
 st = StanfordNERTagger('stanford-ner/english.all.3class.distsim.crf.ser.gz', 'stanford-ner/stanford-ner.jar')
@@ -18,7 +21,8 @@ any that don't contain 'PERSON' as the tag for both words in the bigram and
 the extracted words are treated as the names of the winner and printed out.
 
 Note that this implementation does take a while to run. The bulk of the compute
-time is spent tagging the bigrams using the Stanford POS Tagger.
+time is spent tagging the bigrams using the Stanford POS Tagger. To elleviate this,
+after the initial run the list of named bigrams is pickled to a file.
 """
 
 
@@ -77,7 +81,13 @@ def find_award_winners():
     """
     df = filter_dataframe()
     bigrams = get_bigrams(df['TweetText'].tolist())
-    named_bigrams = extract_names(bigrams)
+
+    if os.path.isfile("named_bigrams.pkl"):
+        named_bigrams = pickle.load(open("named_bigrams.pkl", "rb"))
+    else:
+        named_bigrams = extract_names(bigrams)
+        pickle.dump(named_bigrams, open("named_bigrams.pkl", "wb"))
+
     print("Award Winners")
     # Remove duplicate names in winners list
     for index, name in named_bigrams:
