@@ -16,6 +16,9 @@ tag bigrams with names of individuals with the 'PERSON' tag and generate a
 new tuple like ('Emma', 'Person'). The tagged bigrams are then filtered to exclude
 any that don't contain 'PERSON' as the tag for both words in the bigram and
 the extracted words are treated as the names of the winner and printed out.
+
+Not that this implementation does take a while to run. The bulk of the compute
+time is spent tagging the bigrams using the Stanford POS Tagger.
 """
 
 
@@ -34,28 +37,25 @@ def extract_names(bigrams):
     Tag each of the bigram tuples with the appropriate Part of Speech.
     """
     named_bigrams = []
-    for index, bigram_set in enumerate(bigrams):
-        print("Processing bigram_set", index, "of", len(bigrams))
-        person_index = None
-        for index, bigram in enumerate(bigram_set):
-            tagged = st.tag(bigram)
+    NUM_BIGRAMS = len(bigrams)
+    for index, bigram in enumerate(bigrams):
+        print("Processing bigram", index + 1, "of", NUM_BIGRAMS)
+        tagged = st.tag(bigram)
 
-            # This fixes a weird bug where the tagger will pick up
-            # an empty string and not tag it
-            if len(tagged) == 1:
-                tagged.append((None, None))
-            if len(tagged) == 0:
-                tagged.append((None, None))
-                tagged.append((None, None))
+        # This fixes a weird bug where the tagger will pick up
+        # an empty string and not tag it
+        if len(tagged) == 1:
+            tagged.append((None, None))
+        if len(tagged) == 0:
+            tagged.append((None, None))
+            tagged.append((None, None))
 
-            tags = [tagged[0][1], tagged[1][1]]
-            if tags[0] == 'PERSON' and tags[1] == 'PERSON':
-                person_index = index
-                break
-
-        if person_index is not None:
-            person = " ".join(bigram_set[person_index])
-            named_bigrams.append(person)
+        tags = [tagged[0][1], tagged[1][1]]
+        if tags[0] == 'PERSON' and tags[1] == 'PERSON':
+            person = " ".join(bigrams[index])
+            # If a winner is already on the list, don't add them
+            if person not in named_bigrams:
+                named_bigrams.append(person)
 
     return named_bigrams
 
@@ -80,7 +80,7 @@ def find_award_winners():
     named_bigrams = extract_names(bigrams)
     print("Award Winners")
     # Remove duplicate names in winners list
-    for index, name in set(named_bigrams):
+    for index, name in named_bigrams:
         print(index + 1, ".", name)
 
 if __name__ == '__main__':
