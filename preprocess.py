@@ -26,13 +26,19 @@ tokens_re_string = [
 
 tokens = re.compile(r'('+'|'.join(tokens_re_string)+')', re.VERBOSE | re.IGNORECASE)
 
+def contains_number(word):
+    return any(char.isdigit() for char in word)
+
 def tokenize(text):
     punctuation = list(string.punctuation)
     tokens = []
     stop = stopwords.words('english') + punctuation + ['rt','RT', 'via']
     if isinstance(text, str):
-        for word in text.split(' '):
-            if word.lower().strip() not in stop:
+        for word_ in text.split(' '):
+            word = word_.lower().strip()
+            if (word not in stop and
+                not word.startswith('http') and
+                not contains_number(word)):
                 tokens.append(word.lower())
     return ' '.join(tokens)
 
