@@ -7,21 +7,29 @@ PREPROCESSED_DATA_FILE = 'data_preprocessed.p' #Referring to the preprocessed da
 PREPROCESSED_DF = pd.read_pickle(PREPROCESSED_DATA_FILE)  #Convert back to dataframe
 
 nominees = []
+namelist = []
+tweetstatus = []
+alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 
 def filter_dataframe():
     
-    #Extract the tweets that contain the root of the verb and noun forms ("nominated" and "nominee") relevant to winning.
+#Mark the tweets that contain the words 'nominee' and 'nominated'.
     
-    no_nulls = PREPROCESSED_DF.dropna()
-    return no_nulls[no_nulls['TweetText'].str.contains("nomin")]
+    global tweetstatus
+
+    tweetstatus = PREPROCESSED_DF['TweetText'].str.contains("nominee|nominated")
+    return PREPROCESSED_DF
+
 
 def processnamelist():
 
 #Take in the census data first names and convert them to a list
 
-    firstnames = pd.read_csv('firstnames.txt', sep = " ", header = none)
-    firstnames.columns = ["names"]
-    namelist = firstnames["names"].tolist()
+    global namelist
+
+    names = pd.read_csv("firstnames.txt")
+    names.columns = ['a']
+    namelist = names['a'].tolist()
 
 def findname(target):
 
@@ -30,33 +38,64 @@ def findname(target):
 #of a list to the namepairs list. When done, return name pairs found from the tweet.
 
     namepairs = [] #list within list
-    for name in namelist:
-        if name in target:
-            lastname.append([name, target[target.index(name)+1]])
+    index = 0
+    for token in target:
+        token = token.upper()
+        for name in namelist:
+            name = name[:-1]
+            if name == token and (name != "IN" and name != "AN" and name != "SO" and name != "SEE" and name != "MY"):
+                if index < len(target)-1:
+                    namepairs.append([target[index], target[index+1]])
+                else:
+                    namepairs.append([target[index]])
+        index += 1      
     return namepairs
 
 def processtweet(tweets):
     
-#Takes in the filtered tweets dataframe, splits into words, and finds names using the attached first name list
+#Takes in the list of all tweet text, splits into words, and finds names using the attached first name list
 #Adds found names into list of nominees in the form of "firstname lastname" in one string.
 
+    global nominees
+    global alphabet
+
+    count = 0
     for tweet in tweets:
-        temp = [tweet.split(" ") for tweet in tweets]
-        temp2 = findname(temp)
-        for pair in temp2:
-            nominees.extend(pair[0] + " " + pair[1])
+        if tweetstatus[count] == True:
+            temp = tweet.split(" ")
+            temp2 = findname(temp)
+            for pair in temp2:
+                if len(pair) == 2:
+                    if(pair[0][0] in alphabet and pair[1][0] in alphabet):
+                        nominees.append(pair[0] + " " + pair[1])
+            count += 1
+        else:
+            count += 1
 
 def findnominees():
     
     #Main function --> filters the tweet data, breaks down into words and finds names, and adds them to nominee list.
     
-    filteredtweets = filter_dataframe()
-    processtweet(filteredtweets['TweetText'].tolist())
+    alltweets = filter_dataframe()
+    processnamelist()
+    processtweet(alltweets['TweetText'].tolist())
 
     # Remove duplicate names in winners list
     for name in nominees:
-        if nominees.count(name) > 1:
-            list.clear(name)
-            list.append(name)
+
+        # Remove all strings with numbers
+        if any(character.isdigit() for character in name):
+            nominees.remove(name)
+
+        # Remove all punctuation-containing names
+        if ("!" in name or "." in name or "?" in name or "\\" in name):
+            nominees.remove(name)
+
+        # Remove all duplicates
+        go = nominees.count(name)
+        if go > 1:
+            while go > 1:
+                nominees.remove(name)
+                go -= 1
 
     return nominees
