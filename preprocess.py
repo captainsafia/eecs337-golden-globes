@@ -32,7 +32,7 @@ def tokenize(text):
     stop = stopwords.words('english') + punctuation + ['rt','RT', 'via']
     if isinstance(text, str):
         for word in text.split(' '):
-            if word not in stop:
+            if word.lower().strip() not in stop:
                 tokens.append(word.lower())
     return ' '.join(tokens)
 
