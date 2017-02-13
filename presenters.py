@@ -105,9 +105,10 @@ def main():
 if __name__ == "__main__":
 
     presenters = main()
-    print("Presenters: ", presenters)
 
+    print("Predicted presenters: ", presenters)
     correct = load_file("presenters.txt")
+    print("Actual presenters: ", correct)
 
     count = 0
     for p in presenters:
@@ -115,6 +116,5 @@ if __name__ == "__main__":
         if p in correct:
             count += 1
 
-    print(count)
-    print(len(correct))
-    print(len(presenters))
+    print("Percent found: ")
+    print(count / len(correct))
