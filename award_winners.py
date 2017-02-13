@@ -4,8 +4,7 @@ import os
 import pickle
 
 from nltk import bigrams
-from nltk.tag.stanford import StanfordNERTagger
-st = StanfordNERTagger('stanford-ner/english.all.3class.distsim.crf.ser.gz', 'stanford-ner/stanford-ner.jar')
+from nltk.stem.lancaster import LancasterStemmer
 
 """
 Implementation Notes
@@ -28,14 +27,17 @@ after the initial run the list of named bigrams is pickled to a file.
 
 PREPROCESSED_DATA_FILE = 'data_preprocessed.p'
 PREPROCESSED_DF = pd.read_pickle(PREPROCESSED_DATA_FILE)
-NAMES = open("firstnames.txt").read().splitlines()
+LAST_NAMES = open("surnames.txt").read().splitlines()
+FIRST_NAMES = open("firstnames.txt").read().splitlines()
+FIRST_NAMES = list(map(str.strip, FIRST_NAMES))
+
 
 def filter_dataframe():
     """
     Extract the tweets that contain verbs relevant to winning.
     """
     df_remove_null = PREPROCESSED_DF.dropna()
-    return df_remove_null[df_remove_null['TweetText'].str.contains("wins")]
+    return df_remove_null[df_remove_null['tokens'].str.contains("congratulations|wins|winning|winner")]
 
 def extract_names(bigrams):
     """
@@ -43,21 +45,13 @@ def extract_names(bigrams):
     """
     named_bigrams = []
     NUM_BIGRAMS = len(bigrams)
+    stemmer = LancasterStemmer()
     for index, bigram in enumerate(bigrams):
-        print("Processing bigram", index + 1, "of", NUM_BIGRAMS)
-
-        if bigram[0].upper() in NAMES:
-            print('Found name!')
+        if bigram[0].upper() in FIRST_NAMES and bigram[1].upper() in LAST_NAMES:
             person = " ".join(bigrams[index])
             # If a winner is already on the list, don't add them
             if person not in named_bigrams:
                 named_bigrams.append(person)
-
-        if bigram[0].startswith('@'):
-            print('Found handle!')
-            handle = bigram[0]
-            if handle not in named_bigrams:
-                named_bigrams.append(handle)
 
     return named_bigrams
 
@@ -78,7 +72,7 @@ def find_award_winners():
     tags that are labelled 'PERSON'.
     """
     df = filter_dataframe()
-    bigrams = get_bigrams(df['TweetText'].tolist())
+    bigrams = get_bigrams(df['tokens'].tolist())
 
     named_bigrams = extract_names(bigrams)
 
