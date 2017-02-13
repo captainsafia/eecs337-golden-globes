@@ -5,6 +5,7 @@ import pickle
 
 from nltk import bigrams
 from nltk.stem.lancaster import LancasterStemmer
+from nltk import pos_tag
 
 """
 Implementation Notes
@@ -37,7 +38,7 @@ def filter_dataframe():
     Extract the tweets that contain verbs relevant to winning.
     """
     df_remove_null = PREPROCESSED_DF.dropna()
-    return df_remove_null[df_remove_null['tokens'].str.contains("congratulations|wins|winning|winner")]
+    return df_remove_null[df_remove_null['tokens'].str.contains("congratulations")]
 
 def extract_names(bigrams):
     """
@@ -47,11 +48,11 @@ def extract_names(bigrams):
     NUM_BIGRAMS = len(bigrams)
     stemmer = LancasterStemmer()
     for index, bigram in enumerate(bigrams):
-        if bigram[0].upper() in FIRST_NAMES and bigram[1].upper() in LAST_NAMES:
+        if bigram[0].upper() in FIRST_NAMES:
             person = " ".join(bigrams[index])
             # If a winner is already on the list, don't add them
             if person not in named_bigrams:
-                named_bigrams.append(person)
+                named_bigrams.append(person.title())
 
     return named_bigrams
 
