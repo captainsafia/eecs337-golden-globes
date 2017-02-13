@@ -33,8 +33,8 @@ def tokenize(text):
     if isinstance(text, str):
         for word in text.split(' '):
             if word not in stop:
-                tokens.append(word)
-    return tokens
+                tokens.append(word.lower())
+    return ' '.join(tokens)
 
 def process_data_file(filename):
    DATA_FRAME = pd.read_table(filename, names = [
