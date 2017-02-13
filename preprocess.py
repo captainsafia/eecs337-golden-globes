@@ -28,11 +28,13 @@ tokens = re.compile(r'('+'|'.join(tokens_re_string)+')', re.VERBOSE | re.IGNOREC
 
 def tokenize(text):
     punctuation = list(string.punctuation)
+    tokens = []
     stop = stopwords.words('english') + punctuation + ['rt','RT', 'via']
     if isinstance(text, str):
-        if text not in stop:
-            return tokens.findall(st.stem(text.lower()))
-    return []
+        for word in text.split(' '):
+            if word not in stop:
+                tokens.append(word)
+    return tokens
 
 def process_data_file(filename):
    DATA_FRAME = pd.read_table(filename, names = [
