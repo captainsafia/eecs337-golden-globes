@@ -29,17 +29,21 @@ tokens = re.compile(r'('+'|'.join(tokens_re_string)+')', re.VERBOSE | re.IGNOREC
 def contains_number(word):
     return any(char.isdigit() for char in word)
 
-def tokenize(text):
+def contains_punctuation(word):
     punctuation = list(string.punctuation)
+    return any(char in punctuation for char in word)
+
+def tokenize(text):
     tokens = []
-    stop = stopwords.words('english') + punctuation + ['rt','RT', 'via']
+    stop = stopwords.words('english') + ['rt','RT', 'via']
     if isinstance(text, str):
         for word_ in text.split(' '):
             word = word_.lower().strip()
             if (word not in stop and
+                not contains_punctuation(word) and
                 not word.startswith('http') and
                 not contains_number(word)):
-                tokens.append(word.lower())
+                tokens.append(word)
     return ' '.join(tokens)
 
 def process_data_file(filename):
