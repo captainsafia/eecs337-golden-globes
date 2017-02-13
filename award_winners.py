@@ -28,6 +28,7 @@ after the initial run the list of named bigrams is pickled to a file.
 
 PREPROCESSED_DATA_FILE = 'data_preprocessed.p'
 PREPROCESSED_DF = pd.read_pickle(PREPROCESSED_DATA_FILE)
+NAMES = open("first_names.txt").read().splitlines()
 
 def filter_dataframe():
     """
@@ -44,22 +45,19 @@ def extract_names(bigrams):
     NUM_BIGRAMS = len(bigrams)
     for index, bigram in enumerate(bigrams):
         print("Processing bigram", index + 1, "of", NUM_BIGRAMS)
-        tagged = st.tag(bigram)
 
-        # This fixes a weird bug where the tagger will pick up
-        # an empty string and not tag it
-        if len(tagged) == 1:
-            tagged.append((None, None))
-        if len(tagged) == 0:
-            tagged.append((None, None))
-            tagged.append((None, None))
-
-        tags = [tagged[0][1], tagged[1][1]]
-        if tags[0] == 'PERSON' and tags[1] == 'PERSON':
+        if bigram[0].upper() in NAMES:
+            print('Found name!')
             person = " ".join(bigrams[index])
             # If a winner is already on the list, don't add them
             if person not in named_bigrams:
                 named_bigrams.append(person)
+
+        if bigram[0].startswith('@'):
+            print('Found handle!')
+            handle = bigram[0]
+            if handle not in named_bigrams:
+                named_bigrams.append(handle)
 
     return named_bigrams
 
@@ -82,16 +80,12 @@ def find_award_winners():
     df = filter_dataframe()
     bigrams = get_bigrams(df['TweetText'].tolist())
 
-    if os.path.isfile("named_bigrams.pkl"):
-        named_bigrams = pickle.load(open("named_bigrams.pkl", "rb"))
-    else:
-        named_bigrams = extract_names(bigrams)
-        pickle.dump(named_bigrams, open("named_bigrams.pkl", "wb"))
+    named_bigrams = extract_names(bigrams)
 
     print("Award Winners")
     # Remove duplicate names in winners list
-    for index, name in named_bigrams:
-        print(index + 1, ".", name)
+    for index, name in enumerate(named_bigrams):
+        print(index + 1, name)
 
 if __name__ == '__main__':
     find_award_winners()
