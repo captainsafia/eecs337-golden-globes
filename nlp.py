@@ -1,11 +1,12 @@
 import sys, os
 from preprocess import process_data_file
 from presenters import main
+from nominees import findnominees
 
 
 def usage_message():
     print "usage:"
-    print "python nlp.py -host <path/to/tab/file>"
+    print "python nlp.py -nominees <path/to/tab/file>"
     print "python nlp.py -winner <path/to/tab/file>"
     print "python nlp.py -presenters <path/to/tab/file>"
 
@@ -20,8 +21,8 @@ if __name__ == "__main__":
         if not(os.path.isfile('data_preprocessed.p')):
             process_data_file(args[1])
 
-        if args[0] == "-host":
-            print("Find host")
+        if args[0] == "-nominees":
+            print("Nominees: ", findnominees()
             exit()
         elif args[0] == "-winner":
             print("Find winners")

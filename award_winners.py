@@ -28,7 +28,7 @@ after the initial run the list of named bigrams is pickled to a file.
 
 PREPROCESSED_DATA_FILE = 'data_preprocessed.p'
 PREPROCESSED_DF = pd.read_pickle(PREPROCESSED_DATA_FILE)
-NAMES = open("first_names.txt").read().splitlines()
+NAMES = open("firstnames.txt").read().splitlines()
 
 def filter_dataframe():
     """
